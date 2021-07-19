@@ -22,10 +22,17 @@
             background-color: bisque;
             transition: all 1s ease-in-out;
         }
+
+        #reset {
+            position: absolute;
+            top: 220px;
+        }
     </style>
 </head>
 <body>
 <div id="main">
+
+    <button onclick="shuffleElements()" id="reset">reset</button>
 
     <script>
         let main = document.getElementById("main")
@@ -72,11 +79,13 @@
                 const element = allPoints[i]
                 let xx = Number(element.x) * 55
                 let yy = Number(element.y) * 55
-                main.children[Number(i) + 1].className = `item ${element.x} ${element.y}`
-                main.children[Number(i) + 1].style = `top: ${yy}px;left: ${xx}px;`
+                main.children[Number(i) + 2].className = `item ${element.x} ${element.y}`
+                main.children[Number(i) + 2].style = `top: ${yy}px;left: ${xx}px;`
                 await sleep(creationAnimationTime)
                 // await sleep(300)
             }
+
+            main.children[main.children.length - 1].style.cssText += "opacity:0;"
         }
 
         async function init() {
@@ -101,12 +110,12 @@
         }, creationAnimationTime * 40)
 
         setTimeout(() => {
-            main.children[main.children.length - 1].style.cssText += "opacity:0;"
-
-            // 0 -> <script>
-            for (let i = 1; i < main.children.length - 1; i++) {
+            // 0 -> <button>
+            // 1 -> <script>
+            console.log(main.children)
+            for (let i = 2; i < main.children.length - 1; i++) {
                 main.children[i].addEventListener("click", () => {
-                    for (let j = 1; j < main.children.length; j++) {
+                    for (let j = 2; j < main.children.length; j++) {
                         if (main.children[j].style.cssText.includes("opacity: 0;")) {
                             let destination = main.children[j]
                             let splitDestination = destination.className.split(" ")
