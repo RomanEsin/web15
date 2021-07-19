@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        * {
+            font-family: sans-serif;
+        }
+
+        #main {
+            margin: auto;
+            display: inline-block;
+            height: 100px;
+        }
+
+        .item {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            display: inline-block;
+            background-color: bisque;
+            transition: all 1s ease-in-out;
+        }
+    </style>
+</head>
+<body>
+<div id="main">
+
+    <script>
+        let main = document.getElementById("main")
+        const creationAnimationTime = 20
+
+        class Point {
+            constructor(x, y) {
+                this.x = x
+                this.y = y
+            }
+        }
+
+        function range(start, end) {
+            return Array.apply(start, Array(end))
+                .map((element, index) => index + start);
+        }
+
+        function shuffle(array) {
+            return array.slice().sort(() => Math.random() - 0.5);
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        async function shuffleElements() {
+            let allPoints = [];
+
+            // Create points
+            for (const y in range(0, 4)) {
+                for (const x in range(0, 4)) {
+                    let xx = Number(x) * 55
+                    let yy = Number(y) * 55
+                    console.log(`${xx} ${yy}`)
+                    allPoints.push(new Point(x, y))
+                }
+            }
+
+            allPoints = shuffle(allPoints)
+
+            // Map values
+            console.log(main.children)
+            for (const i in range(0, 16)) {
+                const element = allPoints[i]
+                let xx = Number(element.x) * 55
+                let yy = Number(element.y) * 55
+                main.children[Number(i) + 1].className = `item ${element.x} ${element.y}`
+                main.children[Number(i) + 1].style = `top: ${yy}px;left: ${xx}px;`
+                await sleep(creationAnimationTime)
+                // await sleep(300)
+            }
+        }
+
+        async function init() {
+            for (const y in range(0, 4)) {
+                for (const x in range(0, 4)) {
+                    const newItem = document.createElement("div");
+                    newItem.className = `item ${x} ${y}`
+                    newItem.innerText = (Number(y) * 4 + Number(x) + 1).toString()
+                    let xx = Number(x) * 55
+                    let yy = Number(y) * 55
+                    newItem.style = `top: ${yy}px;left: ${xx}px;`
+                    main.appendChild(newItem)
+                    // await sleep(creationAnimationTime)
+                }
+            }
+        }
+
+        init()
+
+        setTimeout(() => {
+            shuffleElements()
+        }, creationAnimationTime * 40)
+
+        setTimeout(() => {
+            main.children[main.children.length - 1].style.cssText += "opacity:0;"
+
+            // 0 -> <script>
+            for (let i = 1; i < main.children.length - 1; i++) {
+                main.children[i].addEventListener("click", () => {
+                    for (let j = 1; j < main.children.length; j++) {
+                        if (main.children[j].style.cssText.includes("opacity: 0;")) {
+                            let destination = main.children[j]
+                            let splitDestination = destination.className.split(" ")
+                            let tapped = main.children[i]
+                            let splitTapped = tapped.className.split(" ")
+
+                            let x = splitTapped[1]
+                            let y = splitTapped[2]
+
+                            let xx = Number(x) * 55
+                            let yy = Number(y) * 55
+
+                            let x2 = splitDestination[1]
+                            let y2 = splitDestination[2]
+
+                            let xx2 = Number(x2) * 55
+                            let yy2 = Number(y2) * 55
+
+                            let diff1 = Math.abs(x - x2)
+                            let diff2 = Math.abs(y - y2)
+                            console.log(`${diff1} ${diff2}`)
+
+                            if (diff1 === diff2 || diff1 > 1 || diff2 > 1) {
+                                break
+                            }
+
+                            tapped.className = `item ${x2} ${y2}`
+                            tapped.style = `top: ${yy2}px;left: ${xx2}px;`
+
+                            destination.className = `item ${x} ${y}`
+                            destination.style = `top: ${yy}px;left: ${xx}px;opacity: 0;`
+
+                            break
+                        }
+                    }
+                })
+            }
+        }, creationAnimationTime * 120)
+    </script>
+</div>
+</body>
+</html>
